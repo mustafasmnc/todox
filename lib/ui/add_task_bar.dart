@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nodex/ui/theme.dart';
 import 'package:nodex/ui/widgets/input_field.dart';
 
@@ -11,6 +12,7 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  DateTime _selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +28,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 "Add Text",
                 style: headingStyle,
               ),
-              MyInputField(title: "Title", hint: "Enter title here...")
+              MyInputField(title: "Title", hint: "Enter title here"),
+              MyInputField(title: "Note", hint: "Enter note here"),
+              MyInputField(
+                title: "Date",
+                hint: DateFormat.yMd().format(_selectedDate),
+                widget: IconButton(
+                  icon: Icon(
+                    Icons.calendar_today_outlined,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () => _getDateFromUser(),
+                ),
+              ),
             ],
           ),
         ),
@@ -55,5 +69,20 @@ class _AddTaskPageState extends State<AddTaskPage> {
         SizedBox(width: 20)
       ],
     );
+  }
+
+  _getDateFromUser() async {
+    DateTime? _pickerDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2071),
+    );
+    if (_pickerDate != null) {
+      setState(() {
+        _selectedDate = _pickerDate;
+      });
+    } else
+      print("it's null or something is wrong");
   }
 }

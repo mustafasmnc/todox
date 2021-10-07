@@ -27,7 +27,8 @@ class MyInputField extends StatelessWidget {
             style: titleStyle,
           ),
           Container(
-            margin: const EdgeInsets.only(top: 10),
+            margin: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.only(left: 10),
             height: 50,
             width: MediaQuery.of(context).size.width * 0.9,
             decoration: BoxDecoration(
@@ -40,11 +41,28 @@ class MyInputField extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
+                    readOnly: widget == null ? false : true,
                     autofocus: false,
                     cursorColor:
                         Get.isDarkMode ? Colors.grey[100] : Colors.grey[800],
+                    controller: controller,
+                    style: subTitleStyle,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: hint,
+                        hintStyle: subTitleStyle,
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                          color: context.theme.backgroundColor,
+                          width: 0,
+                        ))),
                   ),
                 ),
+                widget == null
+                    ? Container()
+                    : Container(
+                        child: widget,
+                      )
               ],
             ),
           )
