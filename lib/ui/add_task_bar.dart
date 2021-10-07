@@ -77,6 +77,29 @@ class _AddTaskPageState extends State<AddTaskPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2015),
       lastDate: DateTime(2071),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Get.isDarkMode
+                ? ColorScheme.dark(
+                    primary: Colors.grey, // header background color
+                    onPrimary: Colors.white, // header text color
+                    onSurface: Color(0xFF1D84B5), // body text color
+                  )
+                : ColorScheme.light(
+                    primary: primaryClr// header background color
+                    onPrimary: Colors.white, // header text color
+                    onSurface: Color(0xFF0A2239), // body text color
+                  ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                primary: Colors.red, // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (_pickerDate != null) {
       setState(() {
