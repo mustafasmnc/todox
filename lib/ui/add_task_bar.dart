@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nodex/ui/theme.dart';
+import 'package:nodex/ui/widgets/button.dart';
 import 'package:nodex/ui/widgets/input_field.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -17,6 +18,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   int _selectRemind = 5;
   List<int> remindList = [5, 10, 15, 20];
+  String _selectRepeat = "None";
+  List<String> repeatList = ["None", "Daily", "Weekly", "Monthly"];
+  int _selectedColor = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,11 +107,92 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   }).toList(),
                 ),
               ),
+              MyInputField(
+                title: "Repeat",
+                hint: "$_selectRepeat",
+                widget: DropdownButton(
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                  underline: Container(height: 0),
+                  iconSize: 33,
+                  elevation: 4,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectRepeat = newValue!;
+                    });
+                  },
+                  style: subTitleStyle,
+                  items:
+                      repeatList.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _colorPalette(),
+                  MyButton(label: "Create Task", onTap: () => null)
+                ],
+              ),
               SizedBox(height: 100),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  _colorPalette() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Color",
+          style: titleStyle,
+        ),
+        SizedBox(height: 5),
+        Wrap(
+          children: List<Widget>.generate(3, (int index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedColor = index;
+                  print("$index");
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: CircleAvatar(
+                  radius: 14,
+                  backgroundColor: index == 0
+                      ? primaryClr
+                      : index == 1
+                          ? pinkClr
+                          : yellowClr,
+                  child: _selectedColor == index
+                      ? Icon(
+                          Icons.done,
+                          color: Colors.white,
+                          size: 18,
+                        )
+                      : Container(),
+                ),
+              ),
+            );
+          }),
+        )
+      ],
     );
   }
 
