@@ -13,6 +13,10 @@ class AddTaskPage extends StatefulWidget {
 
 class _AddTaskPageState extends State<AddTaskPage> {
   DateTime _selectedDate = DateTime.now();
+  String _endTime = "9:30 PM";
+  String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
+  int _selectRemind = 5;
+  List<int> remindList = [5, 10, 15, 20];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +45,65 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   onPressed: () => _getDateFromUser(),
                 ),
               ),
+              Row(
+                children: [
+                  Expanded(
+                      child: MyInputField(
+                    title: "Start Time",
+                    hint: _startTime,
+                    widget: IconButton(
+                      onPressed: () {
+                        _getTimeFromUser(isStartTime: true);
+                      },
+                      icon: Icon(
+                        Icons.access_time_rounded,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )),
+                  SizedBox(width: 10),
+                  Expanded(
+                      child: MyInputField(
+                    title: "End Time",
+                    hint: _endTime,
+                    widget: IconButton(
+                      onPressed: () {
+                        _getTimeFromUser(isStartTime: false);
+                      },
+                      icon: Icon(
+                        Icons.access_time_rounded,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )),
+                ],
+              ),
+              MyInputField(
+                title: "Remind",
+                hint: "$_selectRemind minutes early",
+                widget: DropdownButton(
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                  underline: Container(height: 0),
+                  iconSize: 33,
+                  elevation: 4,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectRemind = int.parse(newValue!);
+                    });
+                  },
+                  style: subTitleStyle,
+                  items: remindList.map<DropdownMenuItem<String>>((int value) {
+                    return DropdownMenuItem<String>(
+                      value: value.toString(),
+                      child: Text(value.toString()),
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(height: 100),
             ],
           ),
         ),
@@ -77,29 +140,30 @@ class _AddTaskPageState extends State<AddTaskPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2015),
       lastDate: DateTime(2071),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Get.isDarkMode
-                ? ColorScheme.dark(
-                    primary: Colors.grey, // header background color
-                    onPrimary: Colors.white, // header text color
-                    onSurface: Color(0xFF1D84B5), // body text color
-                  )
-                : ColorScheme.light(
-                    primary: primaryClr// header background color
-                    onPrimary: Colors.white, // header text color
-                    onSurface: Color(0xFF0A2239), // body text color
-                  ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                primary: Colors.red, // button text color
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      //Change showDatePicker UI
+      // builder: (context, child) {
+      //   return Theme(
+      //     data: Theme.of(context).copyWith(
+      //       colorScheme: Get.isDarkMode
+      //           ? ColorScheme.dark(
+      //               primary: Colors.grey, // header background color
+      //               onPrimary: Colors.white, // header text color
+      //               onSurface: Color(0xFF1D84B5), // body text color
+      //             )
+      //           : ColorScheme.light(
+      //               //primary: primaryClr // header background color
+      //               onPrimary: Colors.white, // header text color
+      //               onSurface: Color(0xFF0A2239), // body text color
+      //             ),
+      //       textButtonTheme: TextButtonThemeData(
+      //         style: TextButton.styleFrom(
+      //           primary: Colors.red, // button text color
+      //         ),
+      //       ),
+      //     ),
+      //     child: child!,
+      //   );
+      // },
     );
     if (_pickerDate != null) {
       setState(() {
@@ -107,5 +171,31 @@ class _AddTaskPageState extends State<AddTaskPage> {
       });
     } else
       print("it's null or something is wrong");
+  }
+
+  _getTimeFromUser({required bool isStartTime}) async {
+    var pickedTime = await _showTimePicker();
+    String _formatedTime = pickedTime.format(context);
+    if (pickedTime == null) {
+      print("Time Cancelled");
+    } else if (isStartTime == true) {
+      setState(() {
+        _startTime = _formatedTime;
+      });
+    } else if (isStartTime == false) {
+      setState(() {
+        _endTime = _formatedTime;
+      });
+    }
+  }
+
+  _showTimePicker() {
+    return showTimePicker(
+        initialEntryMode: TimePickerEntryMode.input,
+        context: context,
+        initialTime: TimeOfDay(
+          hour: int.parse(_startTime.split(":")[0]),
+          minute: int.parse(_startTime.split(":")[1].split(" ")[0]),
+        ));
   }
 }
