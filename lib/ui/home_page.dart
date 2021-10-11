@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
+      backgroundColor: context.theme.backgroundColor,
       body: Container(
         margin: const EdgeInsets.only(left: 10, right: 10),
         child: Column(
@@ -108,7 +110,7 @@ class _HomePageState extends State<HomePage> {
   _appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: context.theme.backgroundColor,
+      backgroundColor:  context.theme.backgroundColor,
       leading: GestureDetector(
         onTap: () {
           ThemeService().switchTheme();

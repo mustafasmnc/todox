@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:nodex/controllers/task_controller.dart';
+import 'package:nodex/models/task.dart';
 import 'package:nodex/ui/theme.dart';
 import 'package:nodex/ui/widgets/button.dart';
 import 'package:nodex/ui/widgets/input_field.dart';
@@ -13,14 +15,15 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  final TaskController _taskController = Get.put(TaskController());
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String _endTime = "9:30 PM";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
-  int _selectRemind = 5;
+  int _selectedRemind = 5;
   List<int> remindList = [5, 10, 15, 20];
-  String _selectRepeat = "None";
+  String _selectedRepeat = "None";
   List<String> repeatList = ["None", "Daily", "Weekly", "Monthly"];
   int _selectedColor = 0;
   @override
@@ -98,7 +101,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
                 MyInputField(
                   title: "Remind",
-                  hint: "$_selectRemind minutes early",
+                  hint: "$_selectedRemind minutes early",
                   widget: DropdownButton(
                     icon: Icon(
                       Icons.keyboard_arrow_down,
@@ -109,7 +112,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     elevation: 4,
                     onChanged: (String? newValue) {
                       setState(() {
-                        _selectRemind = int.parse(newValue!);
+                        _selectedRemind = int.parse(newValue!);
                       });
                     },
                     style: subTitleStyle,
@@ -124,7 +127,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
                 MyInputField(
                   title: "Repeat",
-                  hint: "$_selectRepeat",
+                  hint: "$_selectedRepeat",
                   widget: DropdownButton(
                     icon: Icon(
                       Icons.keyboard_arrow_down,
@@ -135,7 +138,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     elevation: 4,
                     onChanged: (String? newValue) {
                       setState(() {
-                        _selectRepeat = newValue!;
+                        _selectedRepeat = newValue!;
                       });
                     },
                     style: subTitleStyle,
@@ -172,7 +175,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   _validateData() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
       //add to database
-
+      _addTaskToDB();
       Get.back();
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar(
@@ -187,6 +190,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ),
       );
     }
+  }
+
+  _addTaskToDB() async {
+   int value=await _taskController.addTask(
+        task: Task(
+      note: _noteController.text,
+      title: _titleController.text,
+      date: DateFormat.yMd().format(_selectedDate),
+      startTime: _startTime,
+      endTime: _endTime,
+      remind: _selectedRemind,
+      repeat: _selectedRepeat,
+      color: _selectedColor,
+      isCompleted: 0,
+    ));
+    print("Added note ID is $value");
   }
 
   _colorPalette() {
