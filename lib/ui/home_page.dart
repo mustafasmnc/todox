@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nodex/controllers/task_controller.dart';
@@ -9,6 +10,7 @@ import 'package:nodex/ui/add_task_bar.dart';
 import 'package:nodex/ui/theme.dart';
 import 'package:nodex/ui/widgets/button.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:nodex/ui/widgets/task_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -55,16 +57,32 @@ class _HomePageState extends State<HomePage> {
           itemCount: _taskController.taskList.length,
           itemBuilder: (_, index) {
             print("Note count: ${_taskController.taskList.length}");
-            return GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: 100,
-                height: 50,
-                color: Colors.grey,
-                margin: EdgeInsets.only(bottom: 10),
-                child: Text(_taskController.taskList[index].title.toString()),
-              ),
-            );
+            return AnimationConfiguration.staggeredList(
+                position: index,
+                child: SlideAnimation(
+                    child: FadeInAnimation(
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          print("Tapped");
+                        },
+                        child: TaskTile(_taskController.taskList[index]),
+                      )
+                    ],
+                  ),
+                )));
+            // return Container(
+            //   // onTap: (){
+            //   //   _taskController.deleteTask(_taskController.taskList[index]);
+            //   //   _taskController.getTasks(); //after deleting task, we are updating the taskList list
+            //   // },
+            //   width: 100,
+            //   height: 50,
+            //   color: Colors.grey,
+            //   margin: EdgeInsets.only(bottom: 10),
+            //   child: Text(_taskController.taskList[index].title.toString()),
+            // );
           });
     }));
   }
