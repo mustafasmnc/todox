@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nodex/controllers/task_controller.dart';
 import 'package:nodex/services/notification_services.dart';
 import 'package:nodex/services/theme_services.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.now();
+  final _taskController = Get.put(TaskController());
   var notifyHelper;
   @override
   void initState() {
@@ -40,10 +41,32 @@ class _HomePageState extends State<HomePage> {
           children: [
             _addTaskBar(),
             _addDateBar(),
+            SizedBox(height: 10),
+            _showTasks(),
           ],
         ),
       ),
     );
+  }
+
+  _showTasks() {
+    return Expanded(child: Obx(() {
+      return ListView.builder(
+          itemCount: _taskController.taskList.length,
+          itemBuilder: (_, index) {
+            print("Note count: ${_taskController.taskList.length}");
+            return GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: 100,
+                height: 50,
+                color: Colors.grey,
+                margin: EdgeInsets.only(bottom: 10),
+                child: Text(_taskController.taskList[index].title.toString()),
+              ),
+            );
+          });
+    }));
   }
 
   _addDateBar() {
@@ -101,7 +124,13 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           MyButton(
-              label: "+ Add Task", onTap: () => Get.to(() => AddTaskPage()))
+              label: "+ Add Task",
+              onTap: () async {
+                await Get.to(() =>
+                    AddTaskPage()); //adding await to wait to new added task to database
+                _taskController
+                    .getTasks(); //after adding new task to database, we are updating the taskList list
+              })
         ],
       ),
     );
@@ -110,7 +139,7 @@ class _HomePageState extends State<HomePage> {
   _appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor:  context.theme.backgroundColor,
+      backgroundColor: context.theme.backgroundColor,
       leading: GestureDetector(
         onTap: () {
           ThemeService().switchTheme();
@@ -131,8 +160,18 @@ class _HomePageState extends State<HomePage> {
       ),
       actions: [
         CircleAvatar(
-            backgroundImage: NetworkImage(
-                "https://pbs.twimg.com/profile_images/1296451606087688193/mGmH_xZ__400x400.jpg")),
+          child: ClipOval(
+            child: Image.network(
+              Get.isDarkMode
+                  ? "https://cdn-icons-png.flaticon.com/512/747/747545.png"
+                  : "https://cdn-icons-png.flaticon.com/512/747/747376.png",
+              width: 30,
+              height: 30,
+              fit: BoxFit.cover,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
         SizedBox(width: 20)
       ],
     );
