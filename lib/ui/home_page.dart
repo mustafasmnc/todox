@@ -57,25 +57,38 @@ class _HomePageState extends State<HomePage> {
       return ListView.builder(
           itemCount: _taskController.taskList.length,
           itemBuilder: (_, index) {
-            print("Note count: ${_taskController.taskList.length}");
-            return AnimationConfiguration.staggeredList(
-                position: index,
-                child: SlideAnimation(
-                    child: FadeInAnimation(
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          _showBottomSheet(
-                              context, _taskController.taskList[index]);
-                        },
-                        child: TaskTile(_taskController.taskList[index]),
-                      )
-                    ],
-                  ),
-                )));
+            Task task = _taskController.taskList[index];
+            if (task.repeat == "Daily") {
+              var date = DateFormat.yMd().format(_selectedDate);
+              if (task.date!.compareTo(date) < 0) {
+                return _showTask(index, task);
+              }
+            }
+            if (task.date == DateFormat.yMd().format(_selectedDate)) {
+              return _showTask(index, task);
+            } else {
+              return Container();
+            }
           });
     }));
+  }
+
+  AnimationConfiguration _showTask(int index, Task task) {
+    return AnimationConfiguration.staggeredList(
+        position: index,
+        child: SlideAnimation(
+            child: FadeInAnimation(
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheet(context, task);
+                },
+                child: TaskTile(task),
+              )
+            ],
+          ),
+        )));
   }
 
   _showBottomSheet(BuildContext context, Task task) {
@@ -183,7 +196,9 @@ class _HomePageState extends State<HomePage> {
           color: Colors.grey,
         )),
         onDateChange: (date) {
-          _selectedDate = date;
+          setState(() {
+            _selectedDate = date;
+          });
         },
       ),
     );
