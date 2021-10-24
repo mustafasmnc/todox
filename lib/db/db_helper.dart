@@ -43,4 +43,12 @@ class DBHelper {
   static delete(Task task) async {
     return await _db!.delete(_tableName, where: 'id=?', whereArgs: [task.id]);
   }
+
+  static update(int id) async {
+    return await _db!.rawUpdate('''
+    UPDATE $_tableName
+    SET isCompleted = ?
+    WHERE id = ?
+    ''', [1, id]);
+  }
 }

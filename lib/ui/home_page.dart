@@ -3,6 +3,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nodex/controllers/task_controller.dart';
+import 'package:nodex/models/task.dart';
 import 'package:nodex/services/notification_services.dart';
 import 'package:nodex/services/theme_services.dart';
 import 'package:intl/intl.dart';
@@ -65,26 +66,92 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          print("Tapped");
+                          _showBottomSheet(
+                              context, _taskController.taskList[index]);
                         },
                         child: TaskTile(_taskController.taskList[index]),
                       )
                     ],
                   ),
                 )));
-            // return Container(
-            //   // onTap: (){
-            //   //   _taskController.deleteTask(_taskController.taskList[index]);
-            //   //   _taskController.getTasks(); //after deleting task, we are updating the taskList list
-            //   // },
-            //   width: 100,
-            //   height: 50,
-            //   color: Colors.grey,
-            //   margin: EdgeInsets.only(bottom: 10),
-            //   child: Text(_taskController.taskList[index].title.toString()),
-            // );
           });
     }));
+  }
+
+  _showBottomSheet(BuildContext context, Task task) {
+    Get.bottomSheet(Container(
+      padding: EdgeInsets.only(top: 5),
+      height: task.isCompleted == 1
+          ? MediaQuery.of(context).size.height * 0.24
+          : MediaQuery.of(context).size.height * 0.32,
+      color: Get.isDarkMode ? darkGreyClr : white,
+      child: Column(
+        children: [
+          Container(
+              height: 6,
+              width: 120,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300],
+              )),
+          Spacer(),
+          task.isCompleted == 1
+              ? Container()
+              : _bottomSheetButton(
+                  label: "Task Completed",
+                  onTap: () {
+                    _taskController.markTaskCompleted(task.id!);
+                    Get.back();
+                  },
+                  clr: primaryClr,
+                  context: context),
+          SizedBox(height: 4),
+          _bottomSheetButton(
+              label: "Delete Task",
+              onTap: () {
+                _taskController.deleteTask(task);
+                Get.back();
+              },
+              clr: pinkClr,
+              context: context),
+          SizedBox(height: 12),
+          _bottomSheetButton(
+              label: "Close",
+              onTap: () {
+                Get.back();
+              },
+              clr: white,
+              isClose: true,
+              context: context),
+          Spacer(),
+        ],
+      ),
+    ));
+  }
+
+  _bottomSheetButton(
+      {required String label,
+      required Function()? onTap,
+      required Color clr,
+      bool isClose = false,
+      required BuildContext context}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 4),
+        height: 45,
+        width: MediaQuery.of(context).size.width * 0.8,
+        decoration: BoxDecoration(
+          border: Border.all(width: 2, color: isClose ? Colors.grey : clr),
+          borderRadius: BorderRadius.circular(20),
+          color: isClose ? Colors.transparent : clr,
+        ),
+        child: Center(
+            child: Text(label,
+                style:
+                    isClose ? titleStyle : titleStyle.copyWith(color: white))),
+      ),
+    );
   }
 
   _addDateBar() {
@@ -96,7 +163,7 @@ class _HomePageState extends State<HomePage> {
         width: 60,
         initialSelectedDate: DateTime.now(),
         selectionColor: primaryClr,
-        selectedTextColor: Colors.white,
+        selectedTextColor: white,
         monthTextStyle: GoogleFonts.lato(
             textStyle: TextStyle(
           fontSize: 12,
@@ -173,7 +240,7 @@ class _HomePageState extends State<HomePage> {
         child: Icon(
           Get.isDarkMode ? Icons.wb_sunny : Icons.nightlight_round,
           size: 20,
-          color: Get.isDarkMode ? Colors.white : Colors.black,
+          color: Get.isDarkMode ? white : Colors.black,
         ),
       ),
       actions: [
