@@ -58,9 +58,17 @@ class _HomePageState extends State<HomePage> {
           itemCount: _taskController.taskList.length,
           itemBuilder: (_, index) {
             Task task = _taskController.taskList[index];
-            if (task.repeat == "Daily") {
-              var date = DateFormat.yMd().format(_selectedDate);
-              if (task.date!.compareTo(date) < 0) {
+            print(task.toJson());
+
+            if (task.repeat == 'Daily') {
+              var compareDate = DateFormat.yMd().format(_selectedDate);
+              if (task.date!.compareTo(compareDate) < 0) {
+                //DateTime date = DateFormat.jm().parse(task.startTime.toString());
+                //var myTime = DateFormat("HH:mm").format(date);
+                notifyHelper.scheduledNotification(
+                    int.parse(task.startTime.toString().split(":")[0]),
+                    int.parse(task.startTime.toString().split(":")[1]),
+                    task);
                 return _showTask(index, task);
               }
             }
@@ -250,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                 : "Activated Dark Theme",
           );
 
-          notifyHelper.scheduledNotification();
+          //notifyHelper.scheduledNotification();
         },
         child: Icon(
           Get.isDarkMode ? Icons.wb_sunny : Icons.nightlight_round,

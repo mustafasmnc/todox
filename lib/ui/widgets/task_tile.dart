@@ -11,7 +11,7 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5),
-      width: MediaQuery.of(context).size.width*0.95,
+      width: MediaQuery.of(context).size.width*0.94,
       margin: EdgeInsets.only(bottom: 12),
       child: Container(
         padding: EdgeInsets.all(16),

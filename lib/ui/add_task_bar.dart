@@ -19,8 +19,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  String _endTime = "9:30 PM";
-  String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
+  String _endTime = "9:30";
+  String _startTime = DateFormat("HH:mm").format(DateTime.now()).toString();
   int _selectedRemind = 5;
   List<int> remindList = [5, 10, 15, 20];
   String _selectedRepeat = "None";
@@ -193,7 +193,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   _addTaskToDB() async {
-   int value=await _taskController.addTask(
+    int value = await _taskController.addTask(
         task: Task(
       note: _noteController.text,
       title: _titleController.text,
@@ -267,8 +267,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
       ),
       actions: [
         CircleAvatar(
-            backgroundImage: NetworkImage(
-                "https://pbs.twimg.com/profile_images/1296451606087688193/mGmH_xZ__400x400.jpg")),
+          child: ClipOval(
+            child: Image.network(
+              Get.isDarkMode
+                  ? "https://cdn-icons-png.flaticon.com/512/747/747545.png"
+                  : "https://cdn-icons-png.flaticon.com/512/747/747376.png",
+              width: 30,
+              height: 30,
+              fit: BoxFit.cover,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
         SizedBox(width: 20)
       ],
     );
@@ -333,6 +343,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
     return showTimePicker(
         initialEntryMode: TimePickerEntryMode.input,
         context: context,
+        // builder: (BuildContext context, Widget? child) {
+        //   return MediaQuery(
+        //     data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+        //     child: child!,
+        //   );
+        // },
         initialTime: TimeOfDay(
           hour: int.parse(_startTime.split(":")[0]),
           minute: int.parse(_startTime.split(":")[1].split(" ")[0]),
