@@ -73,6 +73,10 @@ class _HomePageState extends State<HomePage> {
               }
             }
             if (task.date == DateFormat.yMd().format(_selectedDate)) {
+              notifyHelper.scheduledNotification(
+                  int.parse(task.startTime.toString().split(":")[0]),
+                  int.parse(task.startTime.toString().split(":")[1]),
+                  task);
               return _showTask(index, task);
             } else {
               return Container();
