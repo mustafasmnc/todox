@@ -61,7 +61,6 @@ class _HomePageState extends State<HomePage> {
             print(task.toJson());
             var compareDate = DateFormat.yMd().format(_selectedDate);
             var taskDate = DateFormat.yMd().parse(task.date.toString());
-            print(DateFormat('EEEE').format(taskDate));
             if (task.repeat == 'Daily') {
               if (task.date!.compareTo(compareDate) < 0) {
                 //DateTime date = DateFormat.jm().parse(task.startTime.toString());
@@ -126,9 +125,7 @@ class _HomePageState extends State<HomePage> {
   _showBottomSheet(BuildContext context, Task task) {
     Get.bottomSheet(Container(
       padding: EdgeInsets.only(top: 5),
-      height: task.isCompleted == 1
-          ? MediaQuery.of(context).size.height * 0.24
-          : MediaQuery.of(context).size.height * 0.32,
+      height: MediaQuery.of(context).size.height * 0.32,
       color: Get.isDarkMode ? darkGreyClr : white,
       child: Column(
         children: [
@@ -141,7 +138,14 @@ class _HomePageState extends State<HomePage> {
               )),
           Spacer(),
           task.isCompleted == 1
-              ? Container()
+              ? _bottomSheetButton(
+                  label: "Task Incomplete",
+                  onTap: () {
+                    _taskController.markTaskIncompleted(task.id!);
+                    Get.back();
+                  },
+                  clr: primaryClr,
+                  context: context)
               : _bottomSheetButton(
                   label: "Task Completed",
                   onTap: () {
@@ -302,22 +306,22 @@ class _HomePageState extends State<HomePage> {
           color: Get.isDarkMode ? white : Colors.black,
         ),
       ),
-      actions: [
-        CircleAvatar(
-          child: ClipOval(
-            child: Image.network(
-              Get.isDarkMode
-                  ? "https://cdn-icons-png.flaticon.com/512/747/747545.png"
-                  : "https://cdn-icons-png.flaticon.com/512/747/747376.png",
-              width: 30,
-              height: 30,
-              fit: BoxFit.cover,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        SizedBox(width: 20)
-      ],
+      // actions: [
+      //   CircleAvatar(
+      //     child: ClipOval(
+      //       child: Image.network(
+      //         Get.isDarkMode
+      //             ? "https://cdn-icons-png.flaticon.com/512/747/747545.png"
+      //             : "https://cdn-icons-png.flaticon.com/512/747/747376.png",
+      //         width: 30,
+      //         height: 30,
+      //         fit: BoxFit.cover,
+      //       ),
+      //     ),
+      //     backgroundColor: Colors.transparent,
+      //   ),
+      //   SizedBox(width: 20)
+      // ],
     );
   }
 }

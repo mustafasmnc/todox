@@ -11,7 +11,7 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5),
-      width: MediaQuery.of(context).size.width*0.94,
+      width: MediaQuery.of(context).size.width * 0.94,
       margin: EdgeInsets.only(bottom: 12),
       child: Container(
         padding: EdgeInsets.all(16),
@@ -91,11 +91,13 @@ class TaskTile extends StatelessWidget {
   _getBGClr(int no) {
     switch (no) {
       case 0:
-        return bluishClr;
+        return task!.isCompleted == 1 ? bluishClr.withOpacity(0.5) : bluishClr;
       case 1:
-        return pinkClr;
+        return task!.isCompleted == 1 ? pinkClr.withOpacity(0.5) : pinkClr;
       case 2:
-        return yellowClr;
+        return task!.isCompleted == 1 ? yellowClr.withOpacity(0.5) : yellowClr;
+      case 3:
+        return task!.isCompleted == 1 ? greenClr.withOpacity(0.5) : greenClr;
       default:
         return bluishClr;
     }

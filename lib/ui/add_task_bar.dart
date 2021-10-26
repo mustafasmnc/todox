@@ -39,8 +39,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
       _selectedDate = DateFormat.yMd().parse(widget.task!.date.toString());
       _startTime = widget.task!.startTime.toString();
       _endTime = widget.task!.endTime.toString();
-       _selectedRemind=widget.task!.remind!.toInt();
-       _selectedRepeat=widget.task!.repeat.toString();
+      _selectedRemind = widget.task!.remind!.toInt();
+      _selectedRepeat = widget.task!.repeat.toString();
       _selectedColor = widget.task!.color!.toInt();
     }
   }
@@ -57,13 +57,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Text(
-                    "Add Text",
-                    style: headingStyle,
-                  ),
-                ),
                 MyInputField(
                   title: "Title",
                   hint: widget.purpose == "add"
@@ -214,7 +207,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         "Required",
         "All fields are required!",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.white,
+        backgroundColor: Get.isDarkMode ? Colors.white : darkHeaderClr,
         colorText: pinkClr,
         icon: Icon(
           Icons.warning_amber_rounded,
@@ -267,7 +260,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ),
         SizedBox(height: 5),
         Wrap(
-          children: List<Widget>.generate(3, (int index) {
+          children: List<Widget>.generate(4, (int index) {
             return GestureDetector(
               onTap: () {
                 setState(() {
@@ -283,7 +276,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       ? primaryClr
                       : index == 1
                           ? pinkClr
-                          : yellowClr,
+                          : index == 2
+                              ? yellowClr
+                              : greenClr,
                   child: _selectedColor == index
                       ? Icon(
                           Icons.done,
@@ -314,22 +309,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
           color: Get.isDarkMode ? Colors.white : Colors.black,
         ),
       ),
-      actions: [
-        CircleAvatar(
-          child: ClipOval(
-            child: Image.network(
-              Get.isDarkMode
-                  ? "https://cdn-icons-png.flaticon.com/512/747/747545.png"
-                  : "https://cdn-icons-png.flaticon.com/512/747/747376.png",
-              width: 30,
-              height: 30,
-              fit: BoxFit.cover,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        SizedBox(width: 20)
-      ],
+      // actions: [
+      //   CircleAvatar(
+      //     child: ClipOval(
+      //       child: Image.network(
+      //         Get.isDarkMode
+      //             ? "https://cdn-icons-png.flaticon.com/512/747/747545.png"
+      //             : "https://cdn-icons-png.flaticon.com/512/747/747376.png",
+      //         width: 30,
+      //         height: 30,
+      //         fit: BoxFit.cover,
+      //       ),
+      //     ),
+      //     backgroundColor: Colors.transparent,
+      //   ),
+      //   SizedBox(width: 20)
+      // ],
     );
   }
 

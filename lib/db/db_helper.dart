@@ -76,4 +76,12 @@ class DBHelper {
     WHERE id = ?
     ''', [1, id]);
   }
+
+  static taskIncomplete(int id) async {
+    return await _db!.rawUpdate('''
+    UPDATE $_tableName
+    SET isCompleted = ?
+    WHERE id = ?
+    ''', [0, id]);
+  }
 }
