@@ -8,7 +8,10 @@ import 'package:nodex/ui/widgets/button.dart';
 import 'package:nodex/ui/widgets/input_field.dart';
 
 class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({Key? key}) : super(key: key);
+  final String purpose;
+  final Task? task;
+  const AddTaskPage({Key? key, this.task, required this.purpose})
+      : super(key: key);
 
   @override
   _AddTaskPageState createState() => _AddTaskPageState();
@@ -26,6 +29,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
   String _selectedRepeat = "None";
   List<String> repeatList = ["None", "Daily", "Weekly", "Monthly"];
   int _selectedColor = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.purpose == "update") {
+      _titleController.text = widget.task!.title.toString();
+      _noteController.text = widget.task!.note.toString();
+      _selectedDate = DateFormat.yMd().parse(widget.task!.date.toString());
+      _startTime = widget.task!.startTime.toString();
+      _endTime = widget.task!.endTime.toString();
+       _selectedRemind=widget.task!.remind!.toInt();
+       _selectedRepeat=widget.task!.repeat.toString();
+      _selectedColor = widget.task!.color!.toInt();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,12 +66,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
                 MyInputField(
                   title: "Title",
-                  hint: "Enter title here",
+                  hint: widget.purpose == "add"
+                      ? "Enter title here"
+                      : widget.task!.title.toString(),
                   controller: _titleController,
                 ),
                 MyInputField(
                   title: "Note",
-                  hint: "Enter note here",
+                  hint: widget.purpose == "add"
+                      ? "Enter note here"
+                      : widget.task!.note.toString(),
                   controller: _noteController,
                 ),
                 MyInputField(
@@ -160,7 +183,11 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _colorPalette(),
-                    MyButton(label: "Create Task", onTap: () => _validateData())
+                    MyButton(
+                        label: widget.purpose == "add"
+                            ? "Create Task"
+                            : "Update Task",
+                        onTap: () => _validateData())
                   ],
                 ),
                 SizedBox(height: 100),
@@ -174,9 +201,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   _validateData() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
-      //add to database
-      _addTaskToDB();
-      Get.back();
+      if (widget.purpose == "add") {
+        //add to database
+        _addTaskToDB();
+      } else {
+        _updateTaskToDB();
+        _taskController.getTasks();
+      }
+      Get.back(closeOverlays: true);
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar(
         "Required",
@@ -206,6 +238,23 @@ class _AddTaskPageState extends State<AddTaskPage> {
       isCompleted: 0,
     ));
     print("Added note ID is $value");
+  }
+
+  _updateTaskToDB() async {
+    int value = await _taskController.updateTask(
+        task: Task(
+          note: _noteController.text,
+          title: _titleController.text,
+          date: DateFormat.yMd().format(_selectedDate),
+          startTime: _startTime,
+          endTime: _endTime,
+          remind: _selectedRemind,
+          repeat: _selectedRepeat,
+          color: _selectedColor,
+          isCompleted: widget.task!.isCompleted,
+        ),
+        taskId: widget.task!.id);
+    print("Updated note ID is $value");
   }
 
   _colorPalette() {
@@ -343,12 +392,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
     return showTimePicker(
         initialEntryMode: TimePickerEntryMode.input,
         context: context,
-        // builder: (BuildContext context, Widget? child) {
-        //   return MediaQuery(
-        //     data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-        //     child: child!,
-        //   );
-        // },
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          );
+        },
         initialTime: TimeOfDay(
           hour: int.parse(_startTime.split(":")[0]),
           minute: int.parse(_startTime.split(":")[1].split(" ")[0]),

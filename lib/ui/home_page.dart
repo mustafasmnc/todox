@@ -132,6 +132,17 @@ class _HomePageState extends State<HomePage> {
                   context: context),
           SizedBox(height: 4),
           _bottomSheetButton(
+              label: "Update Task",
+              onTap: () {
+                Get.to(() =>AddTaskPage(purpose: "update",task:task));
+                //_taskController.getTasks();
+                //_taskController.updateTask(task);
+                //Get.back();
+              },
+              clr: yellowClr,
+              context: context),
+          SizedBox(height: 4),
+          _bottomSheetButton(
               label: "Delete Task",
               onTap: () {
                 _taskController.deleteTask(task);
@@ -239,7 +250,7 @@ class _HomePageState extends State<HomePage> {
               label: "+ Add Task",
               onTap: () async {
                 await Get.to(() =>
-                    AddTaskPage()); //adding await to wait to new added task to database
+                    AddTaskPage(purpose: "add",)); //adding await to wait to new added task to database
                 _taskController
                     .getTasks(); //after adding new task to database, we are updating the taskList list
               })

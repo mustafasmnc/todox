@@ -14,6 +14,9 @@ class TaskController extends GetxController {
   Future<int> addTask({Task? task}) async {
     return await DBHelper.insert(task);
   }
+  Future<int> updateTask({Task? task, int? taskId}) async {
+    return await DBHelper.updateTask(task,taskId!);
+  }
 
   //get all data from table
   void getTasks() async {
@@ -28,7 +31,7 @@ class TaskController extends GetxController {
   }
 
   void markTaskCompleted(int id) async {
-    await DBHelper.update(id);
+    await DBHelper.taskCompleted(id);
     //after marking task as completed, we are updating the taskList list
     getTasks();
   }
