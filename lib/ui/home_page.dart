@@ -59,12 +59,32 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (_, index) {
             Task task = _taskController.taskList[index];
             print(task.toJson());
-
+            var compareDate = DateFormat.yMd().format(_selectedDate);
+            var taskDate = DateFormat.yMd().parse(task.date.toString());
+            print(DateFormat('EEEE').format(taskDate));
             if (task.repeat == 'Daily') {
-              var compareDate = DateFormat.yMd().format(_selectedDate);
               if (task.date!.compareTo(compareDate) < 0) {
                 //DateTime date = DateFormat.jm().parse(task.startTime.toString());
                 //var myTime = DateFormat("HH:mm").format(date);
+                notifyHelper.scheduledNotification(
+                    int.parse(task.startTime.toString().split(":")[0]),
+                    int.parse(task.startTime.toString().split(":")[1]),
+                    task);
+                return _showTask(index, task);
+              }
+            }
+            if (task.repeat == 'Weekly') {
+              if (DateFormat('EEEE').format(taskDate) ==
+                  DateFormat('EEEE').format(_selectedDate)) {
+                notifyHelper.scheduledNotification(
+                    int.parse(task.startTime.toString().split(":")[0]),
+                    int.parse(task.startTime.toString().split(":")[1]),
+                    task);
+                return _showTask(index, task);
+              }
+            }
+            if (task.repeat == 'Monthly') {
+              if (taskDate.day == _selectedDate.day) {
                 notifyHelper.scheduledNotification(
                     int.parse(task.startTime.toString().split(":")[0]),
                     int.parse(task.startTime.toString().split(":")[1]),
@@ -134,7 +154,7 @@ class _HomePageState extends State<HomePage> {
           _bottomSheetButton(
               label: "Update Task",
               onTap: () {
-                Get.to(() =>AddTaskPage(purpose: "update",task:task));
+                Get.to(() => AddTaskPage(purpose: "update", task: task));
                 //_taskController.getTasks();
                 //_taskController.updateTask(task);
                 //Get.back();
@@ -249,8 +269,9 @@ class _HomePageState extends State<HomePage> {
           MyButton(
               label: "+ Add Task",
               onTap: () async {
-                await Get.to(() =>
-                    AddTaskPage(purpose: "add",)); //adding await to wait to new added task to database
+                await Get.to(() => AddTaskPage(
+                      purpose: "add",
+                    )); //adding await to wait to new added task to database
                 _taskController
                     .getTasks(); //after adding new task to database, we are updating the taskList list
               })
