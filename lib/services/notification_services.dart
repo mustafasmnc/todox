@@ -34,17 +34,17 @@ class NotifyHelper {
   }
 
   displayNotification({required String title, required String body}) async {
-    print("doing test");
-
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      'your channel description',
+      'nodex',
+      'nodex_app',
+      'nodex_app desc',
       importance: Importance.max,
       priority: Priority.high,
       enableLights: true,
       icon: 'appicon',
       largeIcon: DrawableResourceAndroidBitmap('appicon'),
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('my_sound'),
     );
 
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
@@ -70,12 +70,14 @@ class NotifyHelper {
         //tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
         const NotificationDetails(
             android: AndroidNotificationDetails(
-          'your channel id',
-          'your channel name',
-          'your channel description',
+          'nodex',
+          'nodex_app',
+          'nodex_app desc',
           enableLights: true,
           icon: 'appicon',
           largeIcon: DrawableResourceAndroidBitmap('appicon'),
+          playSound: true,
+          sound: RawResourceAndroidNotificationSound('my_sound'),
         )),
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
