@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.now();
   final _taskController = Get.put(TaskController());
   var notifyHelper;
+  int noDataCounter = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -60,87 +61,81 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (_, index) {
               Task task = _taskController.taskList[index];
               print(task.toJson());
-              var compareDate = DateFormat.yMd().format(_selectedDate);
+              var selectedDate = DateFormat.yMd().format(_selectedDate);
+              var todaysDate =
+                  DateFormat.yMd().format(DateTime.now()).toString();
               var taskDate = DateFormat.yMd().parse(task.date.toString());
-              if (task.repeat == 'Daily') {
-                if (task.date!.compareTo(compareDate) < 0) {
-                  //DateTime date = DateFormat.jm().parse(task.startTime.toString());
-                  //var myTime = DateFormat("HH:mm").format(date);
-                  notifyHelper.scheduledNotification(
-                      int.parse(task.startTime.toString().split(":")[0]),
-                      int.parse(task.startTime.toString().split(":")[1]),
-                      task);
-                  return _showTask(index, task);
+              if (task.date!.compareTo(todaysDate) < 0)
+                return Container();
+              else {
+                int taym = (int.parse(task.startTime!.split(":")[0]) * 60) +
+                    (int.parse(task.startTime!.split(":")[1])) -
+                    (int.parse(task.remind.toString()));
+                int newhour = taym ~/ 60;
+                int newMin = taym % 60;
+                if (task.repeat == 'Daily') {
+                  if (task.date!.compareTo(selectedDate) < 0) {
+                    //DateTime date = DateFormat.jm().parse(task.startTime.toString());
+                    //var myTime = DateFormat("HH:mm").format(date);
+                    notifyHelper.scheduledNotification(newhour, newMin, task);
+                    return _showTask(index, task);
+                  }
                 }
-              }
-              if (task.repeat == 'Weekly') {
-                if (DateFormat('EEEE').format(taskDate) ==
-                    DateFormat('EEEE').format(_selectedDate)) {
-                  notifyHelper.scheduledNotification(
-                      int.parse(task.startTime.toString().split(":")[0]),
-                      int.parse(task.startTime.toString().split(":")[1]),
-                      task);
-                  return _showTask(index, task);
+                if (task.repeat == 'Weekly') {
+                  if (DateFormat('EEEE').format(taskDate) ==
+                      DateFormat('EEEE').format(_selectedDate)) {
+                    notifyHelper.scheduledNotification(newhour, newMin, task);
+                    return _showTask(index, task);
+                  }
                 }
-              }
-              if (task.repeat == 'Monthly') {
-                if (taskDate.day == _selectedDate.day) {
-                  notifyHelper.scheduledNotification(
-                      int.parse(task.startTime.toString().split(":")[0]),
-                      int.parse(task.startTime.toString().split(":")[1]),
-                      task);
-                  return _showTask(index, task);
+                if (task.repeat == 'Monthly') {
+                  if (taskDate.day == _selectedDate.day) {
+                    notifyHelper.scheduledNotification(newhour, newMin, task);
+                    return _showTask(index, task);
+                  }
                 }
-              }
-              if (task.date == DateFormat.yMd().format(_selectedDate)) {
-                notifyHelper.scheduledNotification(
-                    int.parse(task.startTime.toString().split(":")[0]),
-                    int.parse(task.startTime.toString().split(":")[1]),
-                    task);
-                return _showTask(index, task);
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "images/no-data.jpg",
-                          width: 100,
-                        ),
-                        Text(
-                          "No Data Found",
-                          style: GoogleFonts.lato(
-                              textStyle:
-                                  TextStyle(color: pinkClr, fontSize: 20)),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                if (task.repeat == 'None' &&
+                    task.date == DateFormat.yMd().format(_selectedDate)) {
+                  notifyHelper.scheduledNotification(newhour, newMin, task);
+                  return _showTask(index, task);
+                } else {
+                  noDataCounter++;
+                  return noDataCounter < 2 ? noData() : Container();
+                }
               }
             });
-      } else {
-        return Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: Container(
-            child: Column(
-              children: [
-                Image.asset(
-                  "images/no-data.jpg",
-                  width: 100,
-                ),
-                Text(
+      } else
+        return noData();
+    }));
+  }
+
+  Widget noData() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: Container(
+        child: Center(
+          child: Column(
+            children: [
+              Image.asset(
+                "images/no-data.png",
+                width: 100,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white),
+                padding: EdgeInsets.all(5),
+                child: Text(
                   "No Data Found",
                   style: GoogleFonts.lato(
                       textStyle: TextStyle(color: pinkClr, fontSize: 20)),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      }
-    }));
+        ),
+      ),
+    );
   }
 
   AnimationConfiguration _showTask(int index, Task task) {
@@ -284,6 +279,7 @@ class _HomePageState extends State<HomePage> {
         onDateChange: (date) {
           setState(() {
             _selectedDate = date;
+            noDataCounter = 0;
           });
         },
       ),

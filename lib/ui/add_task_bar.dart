@@ -24,8 +24,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
   DateTime _selectedDate = DateTime.now();
   String _endTime = "9:30";
   String _startTime = DateFormat("HH:mm").format(DateTime.now()).toString();
-  int _selectedRemind = 5;
-  List<int> remindList = [5, 10, 15, 20];
+  int _selectedRemind = 0;
+  List<int> remindList = [0, 5, 10, 15, 20];
   String _selectedRepeat = "None";
   List<String> repeatList = ["None", "Daily", "Weekly", "Monthly"];
   int _selectedColor = 0;
